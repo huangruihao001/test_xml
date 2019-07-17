@@ -13,7 +13,7 @@ class ReadExcel():
         self.Eorder = self.xml_sheet["A2"].value # 子订单号
         self.first_row = self.date_row(1) # 第一行数据列表
         self.max_row = self.xml_sheet.max_row # 最大行数
-        self.max_column = self.xml_sheet.column # 最大列数
+        self.max_column = self.xml_sheet.max_column # 最大列数
 
 
     def date_row(self, row):# 某一行的数据列表
@@ -31,3 +31,4 @@ if __name__ == '__main__':
     print(a.Eorder)
     print(a.first_row)
     print(a.max_row)
+    print(a.max_column)
