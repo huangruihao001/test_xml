@@ -1,6 +1,6 @@
 from xml.dom import minidom
-from ReadExcel import *
-import datetime
+from ReadExcel2 import *
+import time
 
 def creat_Order(OrderID, EOrderID):
     """
@@ -10,7 +10,7 @@ def creat_Order(OrderID, EOrderID):
     :return:
     """
     Order_node.setAttribute('ID', OrderID)
-    Order_node.setAttribute('create_time', str(datetime.datetime.now()))
+    Order_node.setAttribute('create_time', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     Order_node.setAttribute('Remark', '主订单号')
     # 3.用DOM对象添加根节点
     dom.appendChild(Order_node)
@@ -27,10 +27,10 @@ def cabinet_date(date_row, date_column, code_node):
     :param code_node:
     :return:
     """
-    label = str(excelOBJ.first_row[date_column].value).replace('(', '_').replace(')', '')
+    label = str(excelOBJ.first_row[date_column]).replace('(', '_').replace(')', '')
     i_node = dom.createElement(label)
     code_node.appendChild(i_node)
-    name_text = dom.createTextNode(str(excelOBJ.date_row(date_row)[date_column].value))
+    name_text = dom.createTextNode(str(excelOBJ.date_row(date_row)[date_column]))
     i_node.appendChild(name_text)
 
 def board_code(date_row):
@@ -40,12 +40,14 @@ def board_code(date_row):
     :return:
     """
     code_node = dom.createElement('Product')
-    code_node.setAttribute('CodeID', str(excelOBJ.date_row(date_row)[4].value))
-    code_node.setAttribute('MaterialID', str(excelOBJ.date_row(date_row)[6].value))
+    code_node.setAttribute('CodeID', str(excelOBJ.date_row(date_row)[4]))
+    code_node.setAttribute('MaterialID', str(excelOBJ.date_row(date_row)[6]))
     EOrder_node.appendChild(code_node)
 
     # 生成板件详细信息的标签
-    for i in range(1, excelOBJ.max_column):
+    for i in range(1, excelOBJ.max_column): # 去除空标签
+        if excelOBJ.date_row(date_row)[i] == '':
+            continue
         cabinet_date(date_row, i, code_node)
 
 
@@ -55,7 +57,9 @@ def board_code_all(date_row):
     :param date_row:
     :return:
     """
-    for i in range(2, date_row+1):
+    for i in range(2, date_row+1): # 去除空行
+        if excelOBJ.date_row(i)[0] == '':
+            continue
         board_code(i)
 
 
@@ -79,7 +83,7 @@ def writeXML(Order):
 
 
 if __name__ == '__main__':
-    excelOBJ = ReadExcel("./圣萝莎erp输出输出参考.xlsx", "ERP表")
+    excelOBJ = ReadExcel("./圣萝莎erp输出输出参考.xls", "ERP表")
     dom = minidom.Document()# 创建根节点。每次都要用DOM对象来创建任何节点。
     Order_node = dom.createElement('Order')
     EOrder_node = dom.createElement('EOrder')
